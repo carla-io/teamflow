@@ -9,6 +9,7 @@ import { Workspaces } from "./pages/WorkSpaces";
 import { Projects } from "./pages/Projects";
 import { Tasks } from "./pages/Task";
 import { Members } from "./pages/Members";
+import { Calendar } from "./pages/Calendar";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
 <Route path="/projects" element={<Projects />} />
 <Route path="/tasks" element={<Tasks />} />
 <Route path="/members" element={<Members />} />
+<Route path="/calendar" element={<Calendar />} />
       </Route>
 
       
