@@ -1,23 +1,6 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { DashboardLayout } from "../layouts/DashboardLayout";
+import { useDashboard } from "../contexts/DashboardContext";
 import "./Landing.css";
-
-interface Profile {
-  full_name: string | null;
-  username: string | null;
-  avatar_url: string | null;
-}
-
-const sidebarItems = [
-  { label: "Dashboard", icon: "🏠" },
-  { label: "Workspaces", icon: "🗂️" },
-  { label: "Projects", icon: "📁" },
-  { label: "My Tasks", icon: "📋" },
-  { label: "Members", icon: "👥" },
-  { label: "Calendar", icon: "📅" },
-  { label: "Settings", icon: "⚙️" },
-];
 
 const recentActivity = [
   "John completed Login Page",
@@ -31,150 +14,73 @@ const myTasks = [
   { name: "Fix Authentication", priority: "High", due: "Friday" },
 ];
 
+const stats = [
+  { label: "Projects", value: 4 },
+  { label: "Tasks", value: 12 },
+  { label: "Due Soon", value: 3 },
+  { label: "Members", value: 6 },
+];
+
 export function Landing() {
-  const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("full_name, username, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      setProfile(profileData);
-      setLoading(false);
-    };
-
-    loadUser();
-  }, [navigate]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
-  };
-
-  if (loading) {
-    return (
-      <div className="dashboard-loading">
-        <p>Loading…</p>
-      </div>
-    );
-  }
-
-  const firstName = profile?.full_name?.split(" ")[0] ?? "there";
+  const { firstName } = useDashboard();
 
   return (
-    <div className="dashboard">
-      <aside className="sidebar">
-        <div className="sidebar-logo">TeamFlow</div>
-        <nav className="sidebar-nav">
-          {sidebarItems.map((item) => (
-            <button key={item.label} className="sidebar-item">
-              <span className="sidebar-icon">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
-        </nav>
-        <button className="sidebar-item sidebar-logout" onClick={handleSignOut}>
-          <span className="sidebar-icon">🚪</span>
-          Logout
-        </button>
-      </aside>
+    <DashboardLayout pageTitle="Dashboard">
+      <p className="dash-welcome">Welcome back, {firstName}.</p>
 
-      <div className="dashboard-main">
-        <header className="topbar">
-          <div className="topbar-search">
-            <span>🔍</span>
-            <input type="text" placeholder="Search…" />
-          </div>
-          <div className="topbar-right">
-            <span className="topbar-icon">🔔</span>
-            <span className="topbar-user">
-              {profile?.avatar_url ? (
-                <img className="topbar-avatar" src={profile.avatar_url} alt="" />
-              ) : (
-                "👤"
-              )}{" "}
-              {firstName}
-            </span>
-          </div>
-        </header>
-
-        <main className="dashboard-content">
-          <h1 className="welcome-heading">Welcome back, {firstName} 👋</h1>
-
-          <section>
-            <h2 className="section-title">Quick Stats</h2>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <span className="stat-label">Projects</span>
-                <span className="stat-value">4</span>
-              </div>
-              <div className="stat-card">
-                <span className="stat-label">Tasks</span>
-                <span className="stat-value">12</span>
-              </div>
-              <div className="stat-card">
-                <span className="stat-label">Due Soon</span>
-                <span className="stat-value">3</span>
-              </div>
-              <div className="stat-card">
-                <span className="stat-label">Members</span>
-                <span className="stat-value">6</span>
-              </div>
+      <section>
+        <p className="eyebrow">Quick Stats</p>
+        <div className="dash-stats-grid">
+          {stats.map((stat) => (
+            <div className="frame dash-stat-card" key={stat.label}>
+              <span className="dash-stat-value">{stat.value}</span>
+              <span className="dash-stat-label">{stat.label}</span>
             </div>
-          </section>
+          ))}
+        </div>
+      </section>
 
-          <div className="dashboard-columns">
-            <section>
-              <h2 className="section-title">Recent Activity</h2>
-              <ul className="activity-list">
-                {recentActivity.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </section>
+      <div className="dash-columns">
+        <section>
+          <p className="eyebrow">Recent Activity</p>
+          <ul className="frame dash-activity-list">
+            {recentActivity.map((item, i) => (
+              <li key={i}>
+                <span className="dash-activity-dot" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-            <section>
-              <h2 className="section-title">My Tasks</h2>
-              <table className="tasks-table">
-                <thead>
-                  <tr>
-                    <th>Task</th>
-                    <th>Priority</th>
-                    <th>Due</th>
+        <section>
+          <p className="eyebrow">My Tasks</p>
+          <div className="frame dash-tasks-card">
+            <table className="dash-tasks-table">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Priority</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody>
+                {myTasks.map((task) => (
+                  <tr key={task.name}>
+                    <td>{task.name}</td>
+                    <td>
+                      <span className={`priority-badge priority-${task.priority.toLowerCase()}`}>
+                        {task.priority}
+                      </span>
+                    </td>
+                    <td className="dash-due">{task.due}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {myTasks.map((task) => (
-                    <tr key={task.name}>
-                      <td>{task.name}</td>
-                      <td>
-                        <span className={`priority-badge priority-${task.priority.toLowerCase()}`}>
-                          {task.priority}
-                        </span>
-                      </td>
-                      <td>{task.due}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </main>
+        </section>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

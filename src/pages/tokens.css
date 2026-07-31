@@ -1,0 +1,202 @@
+/*
+  TeamFlow design tokens
+  Direction: a dark "operator console" — the app reads like a terminal a
+  project lead lives in all day. Monospace headings read as status lines,
+  hairline corner-brackets stand in for window chrome, section labels are
+  styled like code comments. Import this once, globally (e.g. in main.tsx
+  or index.css: `@import "./styles/tokens.css";`).
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+
+:root {
+  /* surfaces */
+  --bg-void: #0c0d13;
+  --bg-panel: #14151f;
+  --bg-panel-raised: #1a1c28;
+  --bg-hover: #20222f;
+
+  /* lines */
+  --border-hairline: #262838;
+  --border-bright: #383c52;
+
+  /* text */
+  --text-primary: #e7e7ef;
+  --text-secondary: #9295ab;
+  --text-dim: #565a70;
+
+  /* accent — amber phosphor, the one warm note in the console */
+  --accent: #e3b04b;
+  --accent-dim: rgba(227, 176, 75, 0.12);
+  --accent-line: rgba(227, 176, 75, 0.35);
+
+  /* status */
+  --status-high: #e8746f;
+  --status-high-dim: rgba(232, 116, 111, 0.12);
+  --status-medium: #e3b04b;
+  --status-medium-dim: rgba(227, 176, 75, 0.12);
+  --status-low: #7fd99a;
+  --status-low-dim: rgba(127, 217, 154, 0.12);
+
+  /* type */
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* geometry */
+  --radius-sm: 3px;
+  --radius-md: 5px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* Scrollbars — thin, quiet, in-theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 999px;
+  border: 2px solid var(--bg-panel);
+}
+
+/* Signature: a corner-bracket frame, standing in for the wireframe's
+   box-drawing borders. Apply with class="frame" on any panel/card. */
+.frame {
+  position: relative;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  background: var(--bg-panel);
+}
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--accent-line);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+.frame::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+.frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+.frame:hover::before,
+.frame:hover::after {
+  opacity: 1;
+}
+
+/* Signature: "code comment" section eyebrow — `// Recent Activity` */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  margin: 0 0 12px;
+}
+.eyebrow::before {
+  content: "// ";
+  color: var(--border-bright);
+}
+
+/* Blinking cursor accent, used sparingly next to page titles */
+.cursor-blink {
+  display: inline-block;
+  width: 9px;
+  height: 1.1em;
+  background: var(--accent);
+  margin-left: 8px;
+  vertical-align: -2px;
+  animation: blink 1.1s step-end infinite;
+}
+@keyframes blink {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-blink { animation: none; opacity: 1; }
+}
+
+
+:root,
+[data-theme="dark"] {
+  --bg-void: #0c0d13;
+  --bg-panel: #14151f;
+  --bg-panel-raised: #1a1c28;
+  --bg-hover: #20222f;
+
+  --border-hairline: #262838;
+  --border-bright: #383c52;
+
+  --text-primary: #e7e7ef;
+  --text-secondary: #9295ab;
+  --text-dim: #565a70;
+
+  --accent: #e3b04b;
+  --accent-dim: rgba(227, 176, 75, 0.12);
+  --accent-line: rgba(227, 176, 75, 0.35);
+
+  --status-high: #e8746f;
+  --status-high-dim: rgba(232, 116, 111, 0.12);
+  --status-medium: #e3b04b;
+  --status-medium-dim: rgba(227, 176, 75, 0.12);
+  --status-low: #7fd99a;
+  --status-low-dim: rgba(127, 217, 154, 0.12);
+}
+
+[data-theme="light"] {
+  --bg-void: #f7f8fa;        /* canvas */
+  --bg-panel: #ffffff;
+  --bg-panel-raised: #ffffff;
+  --bg-hover: #f0f2f5;
+
+  --border-hairline: #e4e7ec;  /* border */
+  --border-bright: #cfd4dc;
+
+  --text-primary: #101828;     /* ink */
+  --text-secondary: #667085;   /* ink-soft */
+  --text-dim: #98a2b3;
+
+  --accent: #2563eb;           /* flow-blue, solid version for text/icons */
+  --accent-dim: rgba(37, 99, 235, 0.1);
+  --accent-line: rgba(37, 99, 235, 0.3);
+
+  --status-high: #dc2626;      /* danger */
+  --status-high-dim: rgba(220, 38, 38, 0.1);
+  --status-medium: #d97706;
+  --status-medium-dim: rgba(217, 119, 6, 0.1);
+  --status-low: #0f766e;
+  --status-low-dim: rgba(15, 118, 110, 0.1);
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
