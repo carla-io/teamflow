@@ -7,7 +7,8 @@ import "./pages/tokens.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { Workspaces } from "./pages/WorkSpaces";
 import { Projects } from "./pages/Projects";
-// import { Tasks } from "./pages/Tasks";
+import { Tasks } from "./pages/Task";
+import { Members } from "./pages/Members";
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         <Route path="/" element={<Landing />} />
 <Route path="/workspaces" element={<Workspaces />} />
 <Route path="/projects" element={<Projects />} />
+<Route path="/tasks" element={<Tasks />} />
+<Route path="/members" element={<Members />} />
       </Route>
 
       
