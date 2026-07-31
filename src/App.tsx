@@ -6,7 +6,7 @@ import { Landing } from "./pages/Landing";
 import "./pages/tokens.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { Workspaces } from "./pages/WorkSpaces";
-// import { Projects } from "./pages/Projects";
+import { Projects } from "./pages/Projects";
 // import { Tasks } from "./pages/Tasks";
 
 function App() {
@@ -21,7 +21,10 @@ function App() {
       <Route element={<DashboardShell />}>
         <Route path="/" element={<Landing />} />
 <Route path="/workspaces" element={<Workspaces />} />
+<Route path="/projects" element={<Projects />} />
       </Route>
+
+      
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
