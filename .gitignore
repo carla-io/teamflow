@@ -23,4 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
+.# Environment variables
 .env
+
+# Other environment files
+.env.local
+.env.development
+.env.production
+.env.test

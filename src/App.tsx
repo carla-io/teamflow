@@ -5,7 +5,7 @@ import { DashboardShell } from "./layouts/DashboardShell";
 import { Landing } from "./pages/Landing";
 import "./pages/tokens.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
-// import { Workspaces } from "./pages/Workspaces";
+import { Workspaces } from "./pages/WorkSpaces";
 // import { Projects } from "./pages/Projects";
 // import { Tasks } from "./pages/Tasks";
 
@@ -20,10 +20,7 @@ function App() {
           which both the page components and DashboardLayout read from. */}
       <Route element={<DashboardShell />}>
         <Route path="/" element={<Landing />} />
-        {/* <Route path="/workspaces" element={<Workspaces />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/tasks" element={<Tasks />} /> */}
-        {/* /members, /calendar, /settings land here once those pages exist */}
+<Route path="/workspaces" element={<Workspaces />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/login" replace />} />
