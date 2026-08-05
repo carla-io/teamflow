@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { IconProjects, IconPlus } from "../layouts/icons";
 import { useWorkspaces } from "../hooks/useWorkspaces";
@@ -15,7 +16,6 @@ export function Projects() {
   const { data: workspaces, isLoading: workspacesLoading } = useWorkspaces();
   const [workspaceId, setWorkspaceId] = useState<string | undefined>(undefined);
 
-  // default to first workspace once loaded
   useEffect(() => {
     if (!workspaceId && workspaces && workspaces.length > 0) {
       setWorkspaceId(workspaces[0].id);
@@ -155,10 +155,10 @@ export function Projects() {
 
           {projects.map((p) => (
             <div key={p.id} className="projects-row">
-              <span className="projects-name">
+              <Link to={`/projects/${p.id}`} className="projects-name">
                 <IconProjects className="projects-name-icon" />
                 {p.name}
-              </span>
+              </Link>
               <span className="projects-workspace">{p.description || "—"}</span>
               <span className="projects-due">
                 {new Date(p.created_at).toLocaleDateString()}
@@ -196,7 +196,6 @@ export function Projects() {
         </div>
       )}
 
-      {/* Create / Edit modal */}
       {modalMode && (
         <div className="modal-backdrop" onClick={closeModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -240,7 +239,6 @@ export function Projects() {
         </div>
       )}
 
-      {/* Delete confirmation */}
       {confirmDeleteId && (
         <div className="modal-backdrop" onClick={() => setConfirmDeleteId(null)}>
           <div className="modal modal-small" onClick={(e) => e.stopPropagation()}>

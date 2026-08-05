@@ -11,6 +11,7 @@ import { Projects } from "./pages/Projects";
 import { Tasks } from "./pages/Task";
 import { Members } from "./pages/Members";
 import { Calendar } from "./pages/Calendar";
+import { ProjectBoard } from "./pages/ProjectBoard";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ function App() {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/members" element={<Members />} />
             <Route path="/calendar" element={<Calendar />} />
+            <Route path="/projects/:id" element={<ProjectBoard />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
