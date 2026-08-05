@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LoginPage } from "./pages/auth/login";
 import { RegisterPage } from "./pages/auth/register";
 import { DashboardShell } from "./layouts/DashboardShell";
@@ -11,30 +12,29 @@ import { Tasks } from "./pages/Task";
 import { Members } from "./pages/Members";
 import { Calendar } from "./pages/Calendar";
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <ThemeProvider>
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-      {/* Everything in here shares one DashboardProvider (auth + profile),
-          which both the page components and DashboardLayout read from. */}
-      <Route element={<DashboardShell />}>
-        <Route path="/" element={<Landing />} />
-<Route path="/workspaces" element={<Workspaces />} />
-<Route path="/projects" element={<Projects />} />
-<Route path="/tasks" element={<Tasks />} />
-<Route path="/members" element={<Members />} />
-<Route path="/calendar" element={<Calendar />} />
-      </Route>
+          <Route element={<DashboardShell />}>
+            <Route path="/" element={<Landing />} />
+            <Route path="/workspaces" element={<Workspaces />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/calendar" element={<Calendar />} />
+          </Route>
 
-      
-
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
-
-    </ThemeProvider>
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
