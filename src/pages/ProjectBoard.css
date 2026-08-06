@@ -29,19 +29,20 @@
 
 .board-column-title {
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-dim);
-  letter-spacing: 0.04em;
-  cursor: text;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
 }
 
 .board-column-title-input {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 700;
   background: var(--bg-hover);
   border: 1px solid var(--border-hairline);
   border-radius: 6px;
-  padding: 4px 6px;
+  padding: 5px 8px;
   color: var(--text-primary);
   width: 100%;
 }
@@ -133,4 +134,47 @@
 .board-add-column-actions button:last-child {
   background: var(--bg-hover);
   color: var(--text-primary);
+}
+
+.board-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #666);
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+.board-back-link:hover {
+  color: var(--text-primary, #111);
+}
+
+.board-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.board-back-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary, #6b7280);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.board-back-link:hover {
+  color: var(--text-primary, #111827);
+}
+
+.board-breadcrumb-sep {
+  color: var(--text-tertiary, #9ca3af);
+}
+
+.board-breadcrumb-current {
+  color: var(--text-primary, #111827);
+  font-weight: 600;
 }

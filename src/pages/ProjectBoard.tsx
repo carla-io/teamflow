@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { useProject } from "../hooks/useProjects";
 import {
@@ -90,6 +90,9 @@ export function ProjectBoard() {
   return (
     <DashboardLayout pageTitle={project?.name ?? "Project"}>
       <div className="board-header">
+        <Link to="/projects" className="board-back-link">
+          ← All Projects
+        </Link>
         <p className="eyebrow">{project?.name ?? "Loading…"}</p>
       </div>
 

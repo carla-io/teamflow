@@ -147,52 +147,64 @@ export function Projects() {
       {!isLoading && !isError && projects && projects.length > 0 && (
         <div className="frame projects-table">
           <div className="projects-row projects-row-head">
-            <span>Project</span>
-            <span>Description</span>
-            <span>Created</span>
-            <span></span>
-          </div>
+  <span>Project</span>
+  <span>Description</span>
+  <span>Created</span>
+  <span></span>
+  <span></span>
+</div>
 
           {projects.map((p) => (
-            <div key={p.id} className="projects-row">
-              <Link to={`/projects/${p.id}`} className="projects-name">
-                <IconProjects className="projects-name-icon" />
-                {p.name}
-              </Link>
-              <span className="projects-workspace">{p.description || "—"}</span>
-              <span className="projects-due">
-                {new Date(p.created_at).toLocaleDateString()}
-              </span>
+  <Link
+    to={`/projects/${p.id}`}
+    key={p.id}
+    className="projects-row projects-row-clickable"
+  >
+    <span className="projects-name">
+      <IconProjects className="projects-name-icon" />
+      {p.name}
+    </span>
+    <span className="projects-workspace">{p.description || "—"}</span>
+    <span className="projects-due">
+      {new Date(p.created_at).toLocaleDateString()}
+    </span>
 
-              <span
-                className="workspace-card-menu-wrap"
-                ref={openMenuId === p.id ? menuRef : null}
-              >
-                <button
-                  className="workspace-card-menu-btn"
-                  onClick={() => setOpenMenuId(openMenuId === p.id ? null : p.id)}
-                  aria-label="Project options"
-                >
-                  ⋯
-                </button>
+    <span className="projects-open-hint">Open board →</span>
 
-                {openMenuId === p.id && (
-                  <div className="workspace-card-menu">
-                    <button onClick={() => openEditModal(p)}>Edit</button>
-                    <button
-                      className="danger"
-                      onClick={() => {
-                        setConfirmDeleteId(p.id);
-                        setOpenMenuId(null);
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </span>
-            </div>
-          ))}
+    <span
+      className="workspace-card-menu-wrap"
+      ref={openMenuId === p.id ? menuRef : null}
+      onClick={(e) => e.preventDefault()} // stop row navigation when using the menu
+    >
+      <button
+        className="workspace-card-menu-btn"
+        onClick={(e) => {
+          e.preventDefault();
+          setOpenMenuId(openMenuId === p.id ? null : p.id);
+        }}
+        aria-label="Project options"
+      >
+        ⋯
+      </button>
+
+      {openMenuId === p.id && (
+        <div className="workspace-card-menu">
+          <button onClick={(e) => { e.preventDefault(); openEditModal(p); }}>Edit</button>
+          <button
+            className="danger"
+            onClick={(e) => {
+              e.preventDefault();
+              setConfirmDeleteId(p.id);
+              setOpenMenuId(null);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      )}
+    </span>
+  </Link>
+))}
         </div>
       )}
 
