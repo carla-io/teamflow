@@ -178,3 +178,104 @@
   color: var(--text-primary, #111827);
   font-weight: 600;
 }
+
+
+/* --- Add Task modal form --- */
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.task-form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.task-form-input {
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+.task-form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.task-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Task cards inside a column --- */
+.task-card {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--border-hairline);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.task-card-priority {
+  align-self: flex-start;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.priority-high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.priority-medium {
+  background: rgba(234, 179, 8, 0.15);
+  color: #d4a106;
+}
+
+.priority-low {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.task-card-due {
+  font-size: 11px;
+  color: var(--text-dim);
+}

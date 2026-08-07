@@ -8,8 +8,33 @@ import {
   useUpdateColumn,
   useDeleteColumn,
 } from "../hooks/useColumns";
+import { useTasksByColumn } from "../hooks/useTasks";
+import { CreateTaskModal } from "./CreateTaskModal";
 import { IconPlus } from "../layouts/icons";
 import "./ProjectBoard.css";
+
+function ColumnTasks({ columnId }: { columnId: string }) {
+  const { data: tasks, isLoading } = useTasksByColumn(columnId);
+
+  if (isLoading) return null;
+  if (!tasks || tasks.length === 0) return null;
+
+  return (
+    <>
+      {tasks.map((task) => (
+        <div key={task.id} className="task-card">
+          <p className="task-card-title">{task.title}</p>
+          {task.priority && (
+            <span className={`task-card-priority priority-${task.priority.toLowerCase()}`}>
+              {task.priority}
+            </span>
+          )}
+          {task.due_date && <span className="task-card-due">{task.due_date}</span>}
+        </div>
+      ))}
+    </>
+  );
+}
 
 export function ProjectBoard() {
   const { id: projectId } = useParams<{ id: string }>();
@@ -26,6 +51,7 @@ export function ProjectBoard() {
   const [editingTitle, setEditingTitle] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [addingTaskColumnId, setAddingTaskColumnId] = useState<string | null>(null);
 
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -156,10 +182,15 @@ export function ProjectBoard() {
               </div>
 
               <div className="board-column-tasks">
-                {/* Tasks render here once the tasks table/query exists */}
+                <ColumnTasks columnId={col.id} />
               </div>
 
-              <button className="board-add-task">+ Add Task</button>
+              <button
+                className="board-add-task"
+                onClick={() => setAddingTaskColumnId(col.id)}
+              >
+                + Add Task
+              </button>
             </div>
           ))}
 
@@ -189,6 +220,14 @@ export function ProjectBoard() {
             )}
           </div>
         </div>
+      )}
+
+      {/* Add task modal */}
+      {addingTaskColumnId && (
+        <CreateTaskModal
+          columnId={addingTaskColumnId}
+          onClose={() => setAddingTaskColumnId(null)}
+        />
       )}
 
       {/* Delete confirmation */}

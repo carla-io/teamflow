@@ -1,83 +1,199 @@
-.members-header {
+.member-invite-form {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 10px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.members-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 16px;
+.member-invite-form input[type="text"] {
+  flex: 1;
+  min-width: 180px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-hover);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  font-size: 13px;
 }
 
-.member-card {
-  padding: 18px;
+.member-invite-form input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.member-invite-form select {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-hover);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.member-invite-form button[type="submit"] {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: var(--accent);
+  color: var(--bg-primary, #fff);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-invite-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.member-invite-error {
+  width: 100%;
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--status-low);
+}
+
+/* member-card-role is now a <select>; strip native chrome so it still reads as a pill */
+select.member-card-role {
+  flex-shrink: 0;
+  padding: 3px 24px 3px 10px;
+  border-radius: 999px;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  background-color: var(--bg-hover);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+select.member-card-role:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  background-image: none;
+  padding-right: 10px;
+}
+
+select.member-card-role.status-medium {
+  background-color: var(--status-medium-dim);
+  color: var(--status-medium);
+}
+
+select.member-card-role.status-low {
+  background-color: var(--status-low-dim);
+  color: var(--status-low);
+}
+
+.member-card-remove {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-hover);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.member-card-remove:hover {
+  border-color: var(--status-low);
+  color: var(--status-low);
+}
+
+.member-card-remove:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.member-picker {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.member-picker input[type="text"] {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-hover);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.member-picker input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.member-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--bg-hover);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  padding: 4px;
+}
+
+.member-picker-option {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
 }
 
-.member-card-avatar {
-  width: 40px;
-  height: 40px;
+.member-picker-option:hover {
+  background: var(--bg-hover);
+}
+
+.member-picker-option img {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }
 
-.member-card-avatar-fallback {
+.member-picker-avatar-fallback {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--accent-dim);
   color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: 11px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
-.member-card-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.member-card-name {
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.member-card-email {
+.member-picker-empty {
+  padding: 8px;
+  margin: 0;
   font-size: 12.5px;
   color: var(--text-secondary);
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.member-card-role {
-  flex-shrink: 0;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-dim);
-  background: var(--bg-hover);
-}
-
-.member-card-role.status-medium {
-  background: var(--status-medium-dim);
-  color: var(--status-medium);
-}
-
-.member-card-role.status-low {
-  background: var(--status-low-dim);
-  color: var(--status-low);
 }

@@ -1,27 +1,17 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, type FormEvent } from "react";
+import { useParams } from "react-router-dom";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { IconMembers, IconPlus } from "../layouts/icons";
+import {
+  useWorkspaceMembers,
+  useAddWorkspaceMember,
+  useRemoveWorkspaceMember,
+  useUpdateWorkspaceMemberRole,
+} from "../hooks/useWorkspaceMembers";
+import { useProfiles } from "../hooks/useProfiles";
 import "./Members.css";
 
 type MemberRole = "owner" | "admin" | "member";
-
-interface Member {
-  id: string;
-  name: string;
-  email: string;
-  role: MemberRole;
-  avatarUrl?: string;
-}
-
-// Placeholder data — swap for a real fetch once the members query exists.
-const mockMembers: Member[] = [
-  { id: "1", name: "Carla", email: "carla@teamflow.io", role: "owner" },
-  { id: "2", name: "John", email: "john@teamflow.io", role: "admin" },
-  { id: "3", name: "Maria", email: "maria@teamflow.io", role: "member" },
-  { id: "4", name: "Diego", email: "diego@teamflow.io", role: "member" },
-  { id: "5", name: "Priya", email: "priya@teamflow.io", role: "member" },
-  { id: "6", name: "Sam", email: "sam@teamflow.io", role: "admin" },
-];
 
 const roleLabel: Record<MemberRole, string> = {
   owner: "Owner",
@@ -36,38 +26,168 @@ const roleClass: Record<MemberRole, string> = {
 };
 
 export function Members() {
-  const [members] = useState<Member[]>(mockMembers);
+  const { workspaceId } = useParams<{ workspaceId: string }>();
+
+  const { data: members, isLoading, isError, error } =
+    useWorkspaceMembers(workspaceId);
+  const { data: profiles } = useProfiles();
+
+  const addMember = useAddWorkspaceMember();
+  const removeMember = useRemoveWorkspaceMember();
+  const updateRole = useUpdateWorkspaceMemberRole();
+
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [role, setRole] = useState<MemberRole>("member");
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  const existingUserIds = new Set(members?.map((m) => m.user_id));
+
+  const filteredProfiles = (profiles ?? [])
+    .filter((p) => !existingUserIds.has(p.id))
+    .filter((p) => {
+      const label = (p.full_name || p.username || "").toLowerCase();
+      return label.includes(search.toLowerCase());
+    });
+
+  const selectedProfile = profiles?.find((p) => p.id === selectedUserId);
+
+  // Close the dropdown on outside click.
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setIsPickerOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function handlePick(profileId: string, label: string) {
+    setSelectedUserId(profileId);
+    setSearch(label);
+    setIsPickerOpen(false);
+  }
+
+  function handleInvite(e: FormEvent) {
+  e.preventDefault();
+  console.log("handleInvite fired", { workspaceId, selectedUserId });
+  if (!workspaceId || !selectedUserId) {
+    console.log("blocked by guard clause");
+    return;
+  }
+
+  addMember.mutate(
+    { workspaceId, userId: selectedUserId, role },
+    {
+      onSuccess: (data) => {
+        console.log("add success", data);
+        setSelectedUserId("");
+        setSearch("");
+        setRole("member");
+        setIsInviteOpen(false);
+      },
+      onError: (err) => {
+        console.log("add error", err);
+      },
+    },
+  );
+}
+
+  function handleRemove(memberId: string) {
+    if (!workspaceId) return;
+    removeMember.mutate({ memberId, workspaceId });
+  }
+
+  function handleRoleChange(memberId: string, newRole: string) {
+    updateRole.mutate({ memberId, role: newRole });
+  }
 
   return (
     <DashboardLayout pageTitle="Members">
       <div className="members-header">
         <p className="eyebrow">All Members</p>
-        <button className="workspaces-new-btn">
+        <button
+          className="workspaces-new-btn"
+          onClick={() => setIsInviteOpen((open) => !open)}
+        >
           <IconPlus />
           Invite Member
         </button>
       </div>
 
-      <div className="members-grid">
-        {members.map((m) => (
-          <div key={m.id} className="frame member-card">
-            {m.avatarUrl ? (
-              <img className="member-card-avatar" src={m.avatarUrl} alt="" />
-            ) : (
-              <span className="member-card-avatar member-card-avatar-fallback">
-                {m.name.charAt(0).toUpperCase()}
-              </span>
+      {isInviteOpen && (
+        <form className="frame member-invite-form" onSubmit={handleInvite}>
+          <div className="member-picker" ref={pickerRef}>
+            <input
+              type="text"
+              placeholder="Search users…"
+              value={search}
+              onFocus={() => setIsPickerOpen(true)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setSelectedUserId("");
+                setIsPickerOpen(true);
+              }}
+              autoComplete="off"
+            />
+
+            {isPickerOpen && (
+              <div className="member-picker-dropdown">
+                {filteredProfiles.length === 0 && (
+                  <p className="member-picker-empty">No users found</p>
+                )}
+                {filteredProfiles.map((profile) => {
+                  const label =
+                    profile.full_name || profile.username || "Unnamed user";
+                  return (
+                    <button
+                      type="button"
+                      key={profile.id}
+                      className="member-picker-option"
+                      onClick={() => handlePick(profile.id, label)}
+                    >
+                      {profile.avatar_url ? (
+                        <img src={profile.avatar_url} alt="" />
+                      ) : (
+                        <span className="member-picker-avatar-fallback">
+                          {label.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                      <span>{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             )}
-            <div className="member-card-info">
-              <h3 className="member-card-name">{m.name}</h3>
-              <p className="member-card-email">{m.email}</p>
-            </div>
-            <span className={`member-card-role ${roleClass[m.role]}`}>
-              {roleLabel[m.role]}
-            </span>
           </div>
-        ))}
-      </div>
+
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value as MemberRole)}
+          >
+            <option value="member">Member</option>
+            <option value="admin">Admin</option>
+          </select>
+
+          <button
+            type="submit"
+            disabled={addMember.isPending || !selectedUserId}
+          >
+            {addMember.isPending ? "Adding…" : "Add"}
+          </button>
+
+          {addMember.isError && (
+            <p className="member-invite-error">
+              {(addMember.error as Error).message}
+            </p>
+          )}
+        </form>
+      )}
+
+      {/* ... rest of the component (loading/error/members-grid) stays the same ... */}
     </DashboardLayout>
   );
 }
