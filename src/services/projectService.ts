@@ -8,12 +8,15 @@ export type Project = {
   created_at: string;
 };
 
+/**
+ * Get all projects in a workspace
+ */
 export async function getProjects(workspaceId: string) {
   const { data, error } = await supabase
     .from("projects")
     .select("*")
     .eq("workspace_id", workspaceId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: true });
 
   if (error) {
     throw new Error(error.message);
@@ -22,6 +25,9 @@ export async function getProjects(workspaceId: string) {
   return data as Project[];
 }
 
+/**
+ * Get a single project by id
+ */
 export async function getProject(projectId: string) {
   const { data, error } = await supabase
     .from("projects")
@@ -36,20 +42,23 @@ export async function getProject(projectId: string) {
   return data as Project;
 }
 
-export async function createProject(
-  workspaceId: string,
-  name: string,
-  description?: string,
-) {
-  const { data, error } = await supabase
-    .from("projects")
-    .insert({
-      workspace_id: workspaceId,
-      name,
-      description: description || null,
-    })
-    .select()
-    .single();
+/**
+ * Create a project, plus its three default columns, atomically via RPC.
+ */
+export async function createProject({
+  workspaceId,
+  name,
+  description,
+}: {
+  workspaceId: string;
+  name: string;
+  description?: string | null;
+}) {
+  const { data, error } = await supabase.rpc("create_project_with_columns", {
+    p_workspace_id: workspaceId,
+    p_name: name,
+    p_description: description ?? null,
+  });
 
   if (error) {
     throw new Error(error.message);
@@ -58,17 +67,17 @@ export async function createProject(
   return data as Project;
 }
 
+/**
+ * Update a project's name/description
+ */
 export async function updateProject(
   projectId: string,
   name: string,
-  description?: string,
+  description?: string | null,
 ) {
   const { data, error } = await supabase
     .from("projects")
-    .update({
-      name,
-      description: description || null,
-    })
+    .update({ name, description: description ?? null })
     .eq("id", projectId)
     .select()
     .single();
@@ -80,6 +89,9 @@ export async function updateProject(
   return data as Project;
 }
 
+/**
+ * Delete a project
+ */
 export async function deleteProject(projectId: string) {
   const { error } = await supabase
     .from("projects")
@@ -89,4 +101,6 @@ export async function deleteProject(projectId: string) {
   if (error) {
     throw new Error(error.message);
   }
+
+  return true;
 }

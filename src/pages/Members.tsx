@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
-import { useParams } from "react-router-dom";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { IconMembers, IconPlus } from "../layouts/icons";
 import {
@@ -8,6 +7,7 @@ import {
   useRemoveWorkspaceMember,
   useUpdateWorkspaceMemberRole,
 } from "../hooks/useWorkspaceMembers";
+import { useWorkspaces } from "../hooks/useWorkspaces";
 import { useProfiles } from "../hooks/useProfiles";
 import "./Members.css";
 
@@ -26,7 +26,16 @@ const roleClass: Record<MemberRole, string> = {
 };
 
 export function Members() {
-  const { workspaceId } = useParams<{ workspaceId: string }>();
+  // workspaceId comes from a selector (no route param for this page)
+  const { data: workspaces } = useWorkspaces();
+  const [workspaceId, setWorkspaceId] = useState<string>("");
+
+  // Auto-select the first workspace once loaded, if none chosen yet
+  useEffect(() => {
+    if (!workspaceId && workspaces && workspaces.length > 0) {
+      setWorkspaceId(workspaces[0].id);
+    }
+  }, [workspaces, workspaceId]);
 
   const { data: members, isLoading, isError, error } =
     useWorkspaceMembers(workspaceId);
@@ -52,8 +61,6 @@ export function Members() {
       return label.includes(search.toLowerCase());
     });
 
-  const selectedProfile = profiles?.find((p) => p.id === selectedUserId);
-
   // Close the dropdown on outside click.
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -72,29 +79,21 @@ export function Members() {
   }
 
   function handleInvite(e: FormEvent) {
-  e.preventDefault();
-  console.log("handleInvite fired", { workspaceId, selectedUserId });
-  if (!workspaceId || !selectedUserId) {
-    console.log("blocked by guard clause");
-    return;
-  }
+    e.preventDefault();
+    if (!workspaceId || !selectedUserId) return;
 
-  addMember.mutate(
-    { workspaceId, userId: selectedUserId, role },
-    {
-      onSuccess: (data) => {
-        console.log("add success", data);
-        setSelectedUserId("");
-        setSearch("");
-        setRole("member");
-        setIsInviteOpen(false);
+    addMember.mutate(
+      { workspaceId, userId: selectedUserId, role },
+      {
+        onSuccess: () => {
+          setSelectedUserId("");
+          setSearch("");
+          setRole("member");
+          setIsInviteOpen(false);
+        },
       },
-      onError: (err) => {
-        console.log("add error", err);
-      },
-    },
-  );
-}
+    );
+  }
 
   function handleRemove(memberId: string) {
     if (!workspaceId) return;
@@ -109,9 +108,24 @@ export function Members() {
     <DashboardLayout pageTitle="Members">
       <div className="members-header">
         <p className="eyebrow">All Members</p>
+
+        {/* Workspace selector */}
+        <select
+          value={workspaceId}
+          onChange={(e) => setWorkspaceId(e.target.value)}
+          disabled={!workspaces || workspaces.length === 0}
+        >
+          {(workspaces ?? []).map((ws) => (
+            <option key={ws.id} value={ws.id}>
+              {ws.name}
+            </option>
+          ))}
+        </select>
+
         <button
           className="workspaces-new-btn"
           onClick={() => setIsInviteOpen((open) => !open)}
+          disabled={!workspaceId}
         >
           <IconPlus />
           Invite Member
@@ -187,7 +201,86 @@ export function Members() {
         </form>
       )}
 
-      {/* ... rest of the component (loading/error/members-grid) stays the same ... */}
+      {isLoading && <p>Loading members…</p>}
+
+      {isError && (
+        <p className="error-text">
+          Failed to load members{error instanceof Error ? `: ${error.message}` : ""}
+        </p>
+      )}
+
+      {!isLoading && !isError && members?.length === 0 && (
+        <p>No members yet — invite someone to get started.</p>
+      )}
+
+      {!isLoading && !isError && members && members.length > 0 && (
+        <div className="members-grid">
+          {members.map((member) => {
+            const label =
+              member.profile?.full_name ||
+              member.profile?.username ||
+              "Unnamed user";
+            const currentRole = member.role as MemberRole;
+
+            return (
+              <div key={member.id} className="frame member-card">
+                <div className="member-card-top">
+                  {member.profile?.avatar_url ? (
+                    <img
+                      src={member.profile.avatar_url}
+                      alt=""
+                      className="member-card-avatar"
+                    />
+                  ) : (
+                    <span className="member-picker-avatar-fallback">
+                      {label.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+
+                  <div className="member-card-info">
+                    <p className="member-card-name">{label}</p>
+                    {member.profile?.username && (
+                      <p className="member-card-username">
+                        @{member.profile.username}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="member-card-actions">
+                  {currentRole === "owner" ? (
+                    <span
+                      className={`member-card-role ${roleClass[currentRole]}`}
+                    >
+                      {roleLabel[currentRole]}
+                    </span>
+                  ) : (
+                    <select
+                      className={`member-card-role ${roleClass[currentRole]}`}
+                      value={currentRole}
+                      onChange={(e) => handleRoleChange(member.id, e.target.value)}
+                      disabled={updateRole.isPending}
+                    >
+                      <option value="member">Member</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  )}
+
+                  {currentRole !== "owner" && (
+                    <button
+                      className="member-card-remove"
+                      onClick={() => handleRemove(member.id)}
+                      disabled={removeMember.isPending}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </DashboardLayout>
   );
 }

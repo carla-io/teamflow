@@ -9,11 +9,19 @@ import {
   useDeleteColumn,
 } from "../hooks/useColumns";
 import { useTasksByColumn } from "../hooks/useTasks";
+import type { Task } from "../services/taskService";
 import { CreateTaskModal } from "./CreateTaskModal";
+import { TaskDetailModal } from "./TaskdetailModal";
 import { IconPlus } from "../layouts/icons";
 import "./ProjectBoard.css";
 
-function ColumnTasks({ columnId }: { columnId: string }) {
+function ColumnTasks({
+  columnId,
+  onTaskClick,
+}: {
+  columnId: string;
+  onTaskClick: (task: Task) => void;
+}) {
   const { data: tasks, isLoading } = useTasksByColumn(columnId);
 
   if (isLoading) return null;
@@ -21,17 +29,50 @@ function ColumnTasks({ columnId }: { columnId: string }) {
 
   return (
     <>
-      {tasks.map((task) => (
-        <div key={task.id} className="task-card">
-          <p className="task-card-title">{task.title}</p>
-          {task.priority && (
-            <span className={`task-card-priority priority-${task.priority.toLowerCase()}`}>
-              {task.priority}
-            </span>
-          )}
-          {task.due_date && <span className="task-card-due">{task.due_date}</span>}
-        </div>
-      ))}
+      {tasks.map((task) => {
+        const assigneeLabel =
+          task.profile?.full_name || task.profile?.username || null;
+
+        return (
+          <button
+            key={task.id}
+            type="button"
+            className="task-card task-card-clickable"
+            onClick={() => onTaskClick(task)}
+          >
+            <p className="task-card-title">{task.title}</p>
+
+            <div className="task-card-footer">
+              {task.priority && (
+                <span
+                  className={`task-card-priority priority-${task.priority.toLowerCase()}`}
+                >
+                  {task.priority}
+                </span>
+              )}
+              {task.due_date && (
+                <span className="task-card-due">{task.due_date}</span>
+              )}
+
+              {assigneeLabel ? (
+                <span className="task-card-assignee">
+                  {task.profile?.avatar_url ? (
+                    <img
+                      src={task.profile.avatar_url}
+                      alt=""
+                      className="task-card-assignee-avatar"
+                    />
+                  ) : (
+                    <span className="member-picker-avatar-fallback">
+                      {assigneeLabel.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </span>
+              ) : null}
+            </div>
+          </button>
+        );
+      })}
     </>
   );
 }
@@ -52,6 +93,7 @@ export function ProjectBoard() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [addingTaskColumnId, setAddingTaskColumnId] = useState<string | null>(null);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
 
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -182,7 +224,7 @@ export function ProjectBoard() {
               </div>
 
               <div className="board-column-tasks">
-                <ColumnTasks columnId={col.id} />
+                <ColumnTasks columnId={col.id} onTaskClick={setViewingTask} />
               </div>
 
               <button
@@ -226,7 +268,16 @@ export function ProjectBoard() {
       {addingTaskColumnId && (
         <CreateTaskModal
           columnId={addingTaskColumnId}
+          workspaceId={project?.workspace_id}
           onClose={() => setAddingTaskColumnId(null)}
+        />
+      )}
+
+      {/* Task detail modal */}
+      {viewingTask && (
+        <TaskDetailModal
+          task={viewingTask}
+          onClose={() => setViewingTask(null)}
         />
       )}
 

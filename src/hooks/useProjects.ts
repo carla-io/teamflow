@@ -40,7 +40,7 @@ export function useCreateProject() {
       workspaceId: string;
       name: string;
       description?: string;
-    }) => createProject(workspaceId, name, description),
+    }) => createProject({ workspaceId, name, description }),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

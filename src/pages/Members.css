@@ -197,3 +197,108 @@ select.member-card-role.status-low {
   font-size: 12.5px;
   color: var(--text-secondary);
 }
+
+/* ============================================
+   Members page header — title, workspace select,
+   and invite button aligned in a row
+   ============================================ */
+.members-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.members-header .eyebrow {
+  margin-right: auto;
+}
+
+.members-header select {
+  padding: 8px 28px 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--bg-hover);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.members-header select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Members grid — cards laid out like workspace cards,
+   not stacked full-width blocks
+   ============================================ */
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.member-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.member-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.member-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.member-card-top .member-picker-avatar-fallback {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+}
+
+.member-card-info {
+  min-width: 0;
+}
+
+.member-card-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-card-username {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.member-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}

@@ -1,0 +1,133 @@
+/* ============================================
+   task-card is now a <button> (was a <div>) —
+   reset native button chrome so it still looks
+   like a plain card
+   ============================================ */
+.task-card {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-hover);
+  cursor: pointer;
+  text-align: left;
+}
+
+.task-card-clickable:hover {
+  background: var(--accent-dim);
+}
+
+.task-card-clickable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.task-card-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.task-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.task-card-due {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.task-card-assignee {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.task-card-assignee-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.task-card-footer .member-picker-avatar-fallback {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+
+/* ============================================
+   Task detail modal
+   ============================================ */
+.task-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 12px 0 20px;
+}
+
+.task-detail-description {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+.task-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bg-hover);
+}
+
+.task-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.task-detail-label {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.task-detail-assignee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.task-detail-assignee-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.task-detail-row .member-picker-avatar-fallback {
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+}
+
+.task-detail-unassigned {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+}

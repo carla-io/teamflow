@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useCreateTask } from "../hooks/useTasks";
+import { useWorkspaceMembers } from "../hooks/useWorkspaceMembers";
 
 type Priority = "Low" | "Medium" | "High";
 
 type CreateTaskModalProps = {
   columnId: string;
+  workspaceId: string | undefined;
   onClose: () => void;
 };
 
 const PRIORITIES: Priority[] = ["Low", "Medium", "High"];
 
-export function CreateTaskModal({ columnId, onClose }: CreateTaskModalProps) {
+export function CreateTaskModal({ columnId, workspaceId, onClose }: CreateTaskModalProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<Priority>("Medium");
@@ -19,6 +21,7 @@ export function CreateTaskModal({ columnId, onClose }: CreateTaskModalProps) {
   const [error, setError] = useState<string | null>(null);
 
   const { mutate: createTask, isPending } = useCreateTask();
+  const { data: members, isLoading: membersLoading } = useWorkspaceMembers(workspaceId);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -101,12 +104,25 @@ export function CreateTaskModal({ columnId, onClose }: CreateTaskModalProps) {
 
           <label className="task-form-label">
             Assignee
-            <input
+            <select
               value={assignee}
               onChange={(e) => setAssignee(e.target.value)}
-              placeholder="Select member"
               className="task-form-input"
-            />
+              disabled={!workspaceId || membersLoading}
+            >
+              <option value="">Unassigned</option>
+              {members?.map((member) => {
+                const label =
+                  member.profile?.full_name ||
+                  member.profile?.username ||
+                  "Unnamed user";
+                return (
+                  <option key={member.id} value={member.user_id}>
+                    {label}
+                  </option>
+                );
+              })}
+            </select>
           </label>
 
           {error && <p className="error-text">{error}</p>}
@@ -131,4 +147,4 @@ export function CreateTaskModal({ columnId, onClose }: CreateTaskModalProps) {
       </div>
     </div>
   );
-}
+}   

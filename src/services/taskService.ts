@@ -1,5 +1,12 @@
 import { supabase } from "../lib/supabase";
 
+export type TaskAssigneeProfile = {
+  id: string;
+  username: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+};
+
 export type Task = {
   id: string;
   column_id: string;
@@ -10,7 +17,18 @@ export type Task = {
   due_date: string | null;
   created_at: string;
   assignee: string | null;
+  profile: TaskAssigneeProfile | null;
 };
+
+const TASK_SELECT = `
+  *,
+  profile:profiles!assignee (
+    id,
+    username,
+    full_name,
+    avatar_url
+  )
+`;
 
 /**
  * Get all tasks for a column
@@ -18,7 +36,7 @@ export type Task = {
 export async function getTasksByColumn(columnId: string) {
   const { data, error } = await supabase
     .from("tasks")
-    .select("*")
+    .select(TASK_SELECT)
     .eq("column_id", columnId)
     .order("created_at", { ascending: true });
 
@@ -39,7 +57,7 @@ export async function getTasksByProject(projectId: string) {
   const { data, error } = await supabase
     .from("tasks")
     .select(`
-      *,
+      ${TASK_SELECT},
       columns!inner(project_id)
     `)
     .eq("columns.project_id", projectId)
@@ -67,7 +85,7 @@ export async function createTask(task: {
   const { data, error } = await supabase
     .from("tasks")
     .insert(task)
-    .select()
+    .select(TASK_SELECT)
     .single();
 
   if (error) {
@@ -96,7 +114,7 @@ export async function updateTask(
     .from("tasks")
     .update(updates)
     .eq("id", taskId)
-    .select()
+    .select(TASK_SELECT)
     .single();
 
   if (error) {
